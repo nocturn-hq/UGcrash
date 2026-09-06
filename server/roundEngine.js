@@ -22,8 +22,8 @@ const PHASE = {
 const PREDICTING_DURATION_MS = 10000;
 // Must match crash.js's CRASH_DISPLAY_MS = 2000
 const CRASHED_PAUSE_MS = 2000;
-// Must match crash.js's GROWTH_RATE = 0.10 and predictor.js's GROWTH_RATE = 0.10
-const GROWTH_RATE = 0.1;
+// (Growth is now defined by RATE1/KNEE/RATE2 below, replacing the old
+// single GROWTH_RATE constant — see the two-stage formula.)
 
 // Tunable knobs for how "risky" the game feels. Right now: roughly 2 in 5
 // rounds crash low/fast (1.00x–1.80x, real tension), and the other 3 in 5
@@ -57,13 +57,29 @@ function generateCrashPoint() {
   return Math.round(value * 100) / 100;
 }
 
+// Two-stage growth: normal pace up to KNEE (3.0x), then a deliberately
+// gentler, slower-accelerating pace after that. A pure exponential's
+// rate of change grows forever — this is what made high multipliers
+// feel like they were racing, and made any small timing hiccup near
+// a long round's end look like a bigger visible jump. This "locks"
+// the pace down past the knee instead. Must match crash.js's and
+// predictor.js's copies of this same formula EXACTLY.
+const RATE1 = 0.09;
+const KNEE = 3.0;
+const RATE2 = 0.04;
+const T_KNEE = Math.log(KNEE) / RATE1;
+
 function multiplierAtElapsed(elapsedMs) {
-  const elapsedSec = elapsedMs / 1000;
-  return Math.round(Math.exp(GROWTH_RATE * elapsedSec) * 100) / 100;
+  const t = elapsedMs / 1000;
+  const value = t <= T_KNEE ? Math.exp(RATE1 * t) : KNEE * Math.exp(RATE2 * (t - T_KNEE));
+  return Math.round(value * 100) / 100;
 }
 
 function msToReachMultiplier(target) {
-  return (Math.log(target) / GROWTH_RATE) * 1000;
+  const seconds = target <= KNEE
+    ? Math.log(target) / RATE1
+    : T_KNEE + Math.log(target / KNEE) / RATE2;
+  return seconds * 1000;
 }
 
 class RoundEngine extends EventEmitter {
