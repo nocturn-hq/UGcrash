@@ -8,7 +8,15 @@
   "use strict";
 
   const WAIT_SECONDS = 10;
-  const GROWTH_RATE = 0.1;
+  // Must match roundEngine.js's and crash.js's EXACT two-stage formula.
+  const RATE1 = 0.09;
+  const KNEE = 3.0;
+  const RATE2 = 0.04;
+  const T_KNEE = Math.log(KNEE) / RATE1;
+
+  function multiplierAtElapsedSec(t) {
+    return t <= T_KNEE ? Math.exp(RATE1 * t) : KNEE * Math.exp(RATE2 * (t - T_KNEE));
+  }
   const PREDICTOR_TOKEN = "change-me-secret-123";
   const WS_URL = (location.protocol === "https:" ? "wss://" : "ws://") + location.host;
 
@@ -98,7 +106,7 @@
       // from the real ROUND_CRASH message via handleRoundCrash() above,
       // which is what keeps this in perfect sync with the actual game.
       const elapsedSec = (now - round.runStart) / 1000;
-      const liveMultiplier = Math.exp(elapsedSec * GROWTH_RATE);
+      const liveMultiplier = multiplierAtElapsedSec(elapsedSec);
 
       phaseLabel.textContent = "Live — will crash at";
       predictionValue.textContent = round.crashPoint !== null ? `${round.crashPoint.toFixed(2)}x` : "--.--x";
