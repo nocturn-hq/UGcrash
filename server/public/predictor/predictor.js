@@ -44,6 +44,11 @@
   function handlePrediction(data) {
     round.crashPoint = data.crashPoint;
   }
+  // FIX: this is now the ONLY place round.crashAt ever gets set — driven
+  // purely by the server's real, authoritative message. Previously,
+  // render() also guessed its own crash time from a formula, which drifted
+  // from the server's actual setTimeout firing by enough to visibly crash
+  // "before" the real game did. One source of truth, no more guessing.
   function handleRoundCrash(data) {
     round.crashPoint = data.crashPoint;
     round.crashAt = data.crashAt;
@@ -55,7 +60,7 @@
     ws.onopen = () => statusDot.classList.add("connected");
     ws.onclose = () => {
       statusDot.classList.remove("connected");
-      setTimeout(connect, 10000);
+      setTimeout(connect, 1500);
     };
     ws.onerror = () => {};
 
@@ -87,16 +92,14 @@
       barFill.style.width = `${Math.min(100, Math.max(0, pct))}%`;
       barFill.style.background = "#ffb020";
     } else if (round.runStart !== null) {
+      // FIX: no more self-predicted crash detection here. This branch now
+      // ONLY displays the live climbing multiplier — it never decides on
+      // its own that the round has crashed. That decision comes exclusively
+      // from the real ROUND_CRASH message via handleRoundCrash() above,
+      // which is what keeps this in perfect sync with the actual game.
       const elapsedSec = (now - round.runStart) / 1000;
-      let liveMultiplier = Math.exp(elapsedSec * GROWTH_RATE);
-      if (round.crashPoint !== null) {
-        const crashTimeSec = Math.log(round.crashPoint) / GROWTH_RATE;
-        if (elapsedSec >= crashTimeSec) {
-          round.crashAt = round.runStart + crashTimeSec * 1000;
-          requestAnimationFrame(render);
-          return;
-        }
-      }
+      const liveMultiplier = Math.exp(elapsedSec * GROWTH_RATE);
+
       phaseLabel.textContent = "Live — will crash at";
       predictionValue.textContent = round.crashPoint !== null ? `${round.crashPoint.toFixed(2)}x` : "--.--x";
       predictionValue.className = "prediction running";
