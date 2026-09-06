@@ -9,7 +9,22 @@
 
   const WAIT_SECONDS = 10;
   const CRASH_DISPLAY_MS = 2000;
-  const GROWTH_RATE = 0.1; // matches server's roundEngine.js — real Aviator-paced climb
+  // Two-stage growth: must match roundEngine.js's and predictor.js's copies
+  // of this EXACT formula — normal pace to 3.0x, then a deliberately
+  // gentler pace after that (the "lock"), instead of a pure exponential
+  // that keeps accelerating forever.
+  const RATE1 = 0.09;
+  const KNEE = 3.0;
+  const RATE2 = 0.04;
+  const T_KNEE = Math.log(KNEE) / RATE1;
+
+  function multiplierAtElapsedSec(t) {
+    return t <= T_KNEE ? Math.exp(RATE1 * t) : KNEE * Math.exp(RATE2 * (t - T_KNEE));
+  }
+
+  function elapsedSecAtMultiplier(m) {
+    return m <= KNEE ? Math.log(m) / RATE1 : T_KNEE + Math.log(m / KNEE) / RATE2;
+  }
   const STARTING_BALANCE = 0; // Server provides real balance from users.json
   const MIN_STAKE = 10;
   const WS_URL = (location.protocol === "https:" ? "wss://" : "ws://") + location.host;
@@ -343,21 +358,29 @@
       // gentle bob for the rest of the flight, however high the
       // multiplier climbs, so it never travels toward an edge.
       // ------------------------------------------------------------------
-      const LAUNCH_DURATION_SEC = 1.4;
+      const LAUNCH_DURATION_SEC = 2.2;
       // Recovers real elapsed seconds from the multiplier formula itself
       // (multiplier = e^(rate*t)) — no extra state needs to be tracked.
-      const elapsedSec = Math.log(Math.max(1, multiplierNow)) / GROWTH_RATE;
+      const elapsedSec = elapsedSecAtMultiplier(Math.max(1, multiplierNow));
       const launchProgress = Math.min(1, elapsedSec / LAUNCH_DURATION_SEC);
-      // Ease-out cubic: quick at first, smoothly decelerating into place —
-      // this is the "medium speed, then settles" feel.
-      const eased = 1 - Math.pow(1 - launchProgress, 3);
+      // Ease-in-out cubic: starts gently, holds a steady "medium speed"
+      // through the middle, eases into place at the end — unlike ease-out
+      // (previous version), this doesn't burn most of the distance in
+      // the first fraction of a second.
+      const eased = launchProgress < 0.5
+        ? 4 * launchProgress * launchProgress * launchProgress
+        : 1 - Math.pow(-2 * launchProgress + 2, 3) / 2;
 
       const anchorX = w * 0.46;
       const anchorY = h * 0.5;
-      const bobAmount = 5 * (rocketScale / 1.6);
-      // Bob fades in as it arrives, rather than bobbing while still
-      // traveling toward the anchor.
-      const bob = isCrashed ? 0 : Math.sin(Date.now() / 480) * bobAmount * eased;
+      // Slightly bigger, and blends two sine waves at different speeds
+      // (rather than one perfect sine) so the up-and-down float feels
+      // a little more natural, less like a metronome. Fades in as it
+      // arrives, rather than bobbing while still traveling.
+      const bobAmount = 9 * (rocketScale / 1.6);
+      const bob = isCrashed
+        ? 0
+        : (Math.sin(Date.now() / 480) * 0.7 + Math.sin(Date.now() / 310) * 0.3) * bobAmount * eased;
 
       const launchStartX = padX;
       const launchStartY = h - padY; // bottom-left of the usable stage
@@ -782,13 +805,21 @@
         game.countdown = Math.max(0, (r.runStart - now) / 1000);
       } else {
         game.phase = PHASE.RUNNING;
-        game.multiplier = Math.exp(((now - r.runStart) / 1000) * GROWTH_RATE);
+        game.multiplier = multiplierAtElapsedSec((now - r.runStart) / 1000);
+        lastLiveMultiplier = game.multiplier;
       }
     } else {
       const roundEnd = r.crashAt + CRASH_DISPLAY_MS;
       if (now < roundEnd) {
         game.phase = PHASE.CRASHED;
-        game.multiplier = r.crashPoint;
+        // Smoothly tween from whatever was last displayed up to the
+        // true crash value over 250ms, instead of an instant snap.
+        // This hides any small timing/latency gap behind a graceful
+        // transition rather than a jarring jump to a different number.
+        const SMOOTH_MS = 250;
+        const sinceCrash = now - r.crashAt;
+        const tweenProgress = Math.min(1, Math.max(0, sinceCrash / SMOOTH_MS));
+        game.multiplier = lastLiveMultiplier + (r.crashPoint - lastLiveMultiplier) * tweenProgress;
         game.crashedAt = r.crashAt;
       } else {
         game.phase = PHASE.WAITING;
@@ -799,6 +830,7 @@
   }
 
   let lastPhase = null;
+  let lastLiveMultiplier = 1;
 
   function tick() {
     const now = Date.now();
@@ -833,6 +865,11 @@
       });
       el.multiplierDisplay.textContent = `${fmt(game.multiplier)}x`;
       updateLiveCashoutAmounts();
+    } else if (game.phase === PHASE.CRASHED) {
+      // Keeps the on-screen number updating during the brief tween
+      // into the true crash value (deriveDisplayState computes the
+      // interpolated value every frame; this is what actually shows it).
+      el.multiplierDisplay.textContent = `${fmt(game.multiplier)}x`;
     }
 
     requestAnimationFrame(tick);
