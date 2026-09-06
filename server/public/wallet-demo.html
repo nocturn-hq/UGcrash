@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Wallet counter demo — BlastBet</title>
+<link rel="stylesheet" href="assets/css/theme.css" />
+</head>
+<body>
+  <div class="container" style="max-width:420px;">
+    <h2 style="margin-bottom:4px;">Wallet counter demo</h2>
+    <p class="muted" style="font-size:13px; margin-top:0;">
+      Shows the balance smoothly counting up/down instead of jumping —
+      this is the piece to reuse inside every game's header.
+    </p>
+
+    <div class="panel" style="padding:24px; text-align:center; margin-bottom:16px;">
+      <div class="muted" style="font-size:12px; margin-bottom:6px;">BALANCE</div>
+      <div id="balanceDisplay" class="mono" style="font-size:34px; font-weight:700;"></div>
+    </div>
+
+    <div class="field">
+      <label for="amountInput">Amount</label>
+      <input id="amountInput" type="number" value="500" min="1" />
+    </div>
+
+    <div style="display:flex; gap:10px;">
+      <button id="addBtn" class="btn btn-primary" style="flex:1;">Add funds</button>
+      <button id="subtractBtn" class="btn btn-secondary" style="flex:1;">Remove funds</button>
+    </div>
+
+    <p class="muted" style="font-size:12px; margin-top:18px;">
+      No backend yet — this balance lives only in this page's memory and resets on reload.
+      That's intentional for now; see GAME_SPECS.md §9.
+    </p>
+  </div>
+
+  <script src="assets/js/currency.js"></script>
+  <script src="assets/js/wallet.js"></script>
+  <script>
+    const wallet = new Wallet(document.getElementById("balanceDisplay"), {
+      startingBalance: 10000,
+      countryCode: "KE",
+    });
+
+    document.getElementById("addBtn").addEventListener("click", () => {
+      const amt = parseFloat(document.getElementById("amountInput").value) || 0;
+      wallet.add(amt);
+    });
+
+    document.getElementById("subtractBtn").addEventListener("click", () => {
+      const amt = parseFloat(document.getElementById("amountInput").value) || 0;
+      wallet.subtract(amt);
+    });
+  </script>
+</body>
+</html>

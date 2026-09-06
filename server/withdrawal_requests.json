@@ -1,0 +1,10 @@
+[
+  {
+    "id": "bb8bad09-47a0-42f8-9195-4ea99057f867",
+    "userId": "40a90aba-6814-4193-8dfc-974b06fa6136",
+    "amount": 50,
+    "method": "M-Pesa",
+    "status": "approved",
+    "date": "2026-09-06T05:23:58.051Z"
+  }
+]

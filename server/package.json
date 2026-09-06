@@ -1,0 +1,19 @@
+{
+  "name": "blastbet-crash-server",
+  "version": "1.0.0",
+  "description": "Authoritative crash-game backend for BlastBet",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "dotenv": "^16.4.7",
+    "express": "^4.19.2",
+    "express-mongo-sanitize": "^2.2.0",
+    "express-rate-limit": "^8.7.0",
+    "helmet": "^8.3.0",
+    "mongoose": "^9.9.5",
+    "ws": "^8.17.0"
+  }
+}

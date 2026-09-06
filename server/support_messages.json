@@ -1,0 +1,118 @@
+[
+  {
+    "id": "266f0684-cf97-4757-b4f5-5cacee603278",
+    "userId": "40a90aba-6814-4193-8dfc-974b06fa6136",
+    "email": null,
+    "message": "hello i am facing a problem",
+    "sender": "user",
+    "date": "2026-09-06T02:20:47.696Z",
+    "read": false
+  },
+  {
+    "id": "19df712f-9f69-4a6b-b4d0-7eed86ad3644",
+    "userId": "40a90aba-6814-4193-8dfc-974b06fa6136",
+    "email": null,
+    "message": "yoo",
+    "sender": "user",
+    "date": "2026-09-06T02:39:11.582Z",
+    "read": false
+  },
+  {
+    "id": "3d876a28-1feb-47a2-b163-5f0d74fa6077",
+    "userId": "40a90aba-6814-4193-8dfc-974b06fa6136",
+    "email": null,
+    "message": "joo",
+    "sender": "user",
+    "date": "2026-09-06T02:45:18.266Z",
+    "read": false
+  },
+  {
+    "id": "4203fdeb-4e2a-4c14-b52f-28761bd9ff7e",
+    "userId": "40a90aba-6814-4193-8dfc-974b06fa6136",
+    "email": null,
+    "message": "marada mzee",
+    "sender": "user",
+    "date": "2026-09-06T02:49:05.667Z",
+    "read": false
+  },
+  {
+    "id": "a41aaf4b-393b-4d02-a80a-dd256b033932",
+    "userId": "40a90aba-6814-4193-8dfc-974b06fa6136",
+    "message": "be specific",
+    "sender": "admin",
+    "date": "2026-09-06T03:02:53.217Z",
+    "read": true
+  },
+  {
+    "id": "633d0433-fa63-4594-b571-ed4b1afc31c8",
+    "userId": "40a90aba-6814-4193-8dfc-974b06fa6136",
+    "message": "so what",
+    "sender": "admin",
+    "date": "2026-09-06T03:27:00.550Z",
+    "read": true
+  },
+  {
+    "id": "24680ad9-09b8-4a9c-95fc-8dd82c627b35",
+    "userId": "40a90aba-6814-4193-8dfc-974b06fa6136",
+    "message": "p",
+    "sender": "admin",
+    "date": "2026-09-06T03:31:20.248Z",
+    "read": true
+  },
+  {
+    "id": "b22f048d-30be-4761-ad77-9910acad6732",
+    "userId": "40a90aba-6814-4193-8dfc-974b06fa6136",
+    "message": "bee",
+    "sender": "user",
+    "date": "2026-09-06T03:32:17.894Z",
+    "read": false
+  },
+  {
+    "id": "a6203abc-d68f-4e03-9967-e933643819ff",
+    "userId": "40a90aba-6814-4193-8dfc-974b06fa6136",
+    "message": "se,aje mzee",
+    "sender": "admin",
+    "date": "2026-09-06T03:32:39.944Z",
+    "read": true
+  },
+  {
+    "id": "0720c9c7-6380-45ac-a3c9-2924862f3a25",
+    "userId": "40a90aba-6814-4193-8dfc-974b06fa6136",
+    "message": "lazima tuwaoshe",
+    "sender": "admin",
+    "date": "2026-09-06T03:50:47.880Z",
+    "read": true
+  },
+  {
+    "id": "5da09784-17fd-4cb8-88a1-052030393e3e",
+    "userId": "40a90aba-6814-4193-8dfc-974b06fa6136",
+    "message": "walaai😂😂😂",
+    "sender": "user",
+    "date": "2026-09-06T03:51:10.114Z",
+    "read": false
+  },
+  {
+    "id": "d0c71c1b-7a68-4bb0-8629-8b1119b81cee",
+    "userId": "40a90aba-6814-4193-8dfc-974b06fa6136",
+    "message": "hi",
+    "sender": "user",
+    "date": "2026-09-06T05:18:48.406Z",
+    "read": false
+  },
+  {
+    "id": "eae9dc93-dd32-475b-80fb-0fef5b31144e",
+    "userId": "40a90aba-6814-4193-8dfc-974b06fa6136",
+    "message": "hello",
+    "sender": "admin",
+    "date": "2026-09-06T05:19:07.916Z",
+    "read": true
+  },
+  {
+    "id": "48fd64f4-0781-4deb-b9b2-429f17f3e406",
+    "userId": "40a90aba-6814-4193-8dfc-974b06fa6136",
+    "message": "superb",
+    "sender": "admin",
+    "date": "2026-09-06T05:20:17.913Z",
+    "read": true
+  }
+]

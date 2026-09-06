@@ -1,0 +1,114 @@
+[
+  {
+    "id": "51ef1b9e-7c82-416c-965f-839723d9260d",
+    "userId": "40a90aba-6814-4193-8dfc-974b06fa6136",
+    "action": "ADMIN_CREDIT",
+    "details": "Amount: 50",
+    "timestamp": "2026-09-06T03:09:24.648Z"
+  },
+  {
+    "id": "5ce09d76-9b1c-4d76-8cf9-9e6d796f2d8d",
+    "userId": "40a90aba-6814-4193-8dfc-974b06fa6136",
+    "action": "ADMIN_CREDIT",
+    "details": "Amount: 10",
+    "timestamp": "2026-09-06T03:09:46.868Z"
+  },
+  {
+    "id": "0c42595b-1ebf-49d9-9255-7272055122f9",
+    "userId": "40a90aba-6814-4193-8dfc-974b06fa6136",
+    "action": "SUPPORT_MESSAGE",
+    "details": "bee",
+    "timestamp": "2026-09-06T03:32:17.897Z"
+  },
+  {
+    "id": "a5c2eb14-52b4-43b3-bec7-82abf32ee247",
+    "userId": "40a90aba-6814-4193-8dfc-974b06fa6136",
+    "action": "SUPPORT_MESSAGE",
+    "details": "walaai😂😂😂",
+    "timestamp": "2026-09-06T03:51:10.115Z"
+  },
+  {
+    "id": "b899425b-7fd9-405a-80c2-61166a359a01",
+    "userId": "40a90aba-6814-4193-8dfc-974b06fa6136",
+    "action": "ADMIN_CREDIT",
+    "details": "Amount: 50",
+    "timestamp": "2026-09-06T05:06:07.711Z"
+  },
+  {
+    "id": "dca1425d-4990-41a7-9eff-48f6c3111a54",
+    "userId": "40a90aba-6814-4193-8dfc-974b06fa6136",
+    "action": "PLACE_BET",
+    "details": "Amount: 100, Slot: 1",
+    "timestamp": "2026-09-06T05:16:26.692Z"
+  },
+  {
+    "id": "feb60901-adc6-4e29-8c5e-f85e16f3f177",
+    "userId": "40a90aba-6814-4193-8dfc-974b06fa6136",
+    "action": "CASH_OUT",
+    "details": "Amount: 112, Slot: 1",
+    "timestamp": "2026-09-06T05:16:34.506Z"
+  },
+  {
+    "id": "85c0bf12-80c7-426d-8a74-74d8a0f9421d",
+    "userId": "40a90aba-6814-4193-8dfc-974b06fa6136",
+    "action": "SUPPORT_MESSAGE",
+    "details": "hi",
+    "timestamp": "2026-09-06T05:18:48.407Z"
+  },
+  {
+    "id": "6ca3cdc0-2062-43fd-9d23-77bd1c3801d6",
+    "userId": "40a90aba-6814-4193-8dfc-974b06fa6136",
+    "action": "WITHDRAW_REQUEST",
+    "details": "Amount: 50",
+    "timestamp": "2026-09-06T05:23:58.054Z"
+  },
+  {
+    "id": "cc6c58c9-989b-4c3d-8fb3-0dc3bc520dcd",
+    "userId": "40a90aba-6814-4193-8dfc-974b06fa6136",
+    "action": "WITHDRAW_APPROVED",
+    "details": "Amount: 50",
+    "timestamp": "2026-09-06T05:24:07.361Z"
+  },
+  {
+    "id": "5298934b-0843-4296-8788-71d60f1b8bc3",
+    "userId": "40a90aba-6814-4193-8dfc-974b06fa6136",
+    "action": "DEPOSIT_INITIATED",
+    "details": "Amount: 100",
+    "timestamp": "2026-09-06T05:27:06.899Z"
+  },
+  {
+    "id": "1c31f532-aae2-4225-b367-6088b30607d3",
+    "userId": "40a90aba-6814-4193-8dfc-974b06fa6136",
+    "action": "DEPOSIT_INITIATED",
+    "details": "Amount: 100",
+    "timestamp": "2026-09-06T05:30:28.626Z"
+  },
+  {
+    "id": "77e35883-e28f-4908-8ca4-b3600c7a3a68",
+    "userId": "40a90aba-6814-4193-8dfc-974b06fa6136",
+    "action": "DEPOSIT_INITIATED",
+    "details": "Amount: 1000",
+    "timestamp": "2026-09-06T07:10:40.652Z"
+  },
+  {
+    "id": "6cccaf72-b4c7-4b49-8ed6-c35a53e6e376",
+    "userId": "40a90aba-6814-4193-8dfc-974b06fa6136",
+    "action": "ADMIN_CREDIT",
+    "details": "Amount: 50",
+    "timestamp": "2026-09-06T07:26:00.513Z"
+  },
+  {
+    "id": "474152c7-6756-445c-9aa9-bbb20ed0fd3c",
+    "userId": "40a90aba-6814-4193-8dfc-974b06fa6136",
+    "action": "PLACE_BET",
+    "details": "Amount: 10, Slot: 1",
+    "timestamp": "2026-09-06T07:29:23.614Z"
+  },
+  {
+    "id": "bbae256f-5727-4bcf-9e0b-001966931c3e",
+    "userId": "40a90aba-6814-4193-8dfc-974b06fa6136",
+    "action": "CASH_OUT",
+    "details": "Amount: 20, Slot: 1",
+    "timestamp": "2026-09-06T07:29:30.621Z"
+  }
+]

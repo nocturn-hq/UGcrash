@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Predictor — BlastBet</title>
+  <link rel="manifest" href="manifest.json" />
+  <link rel="stylesheet" href="predictor.css" />
+  <meta name="theme-color" content="#0b0b12" />
+</head>
+<body>
+
+  <!-- Animated Background Canvas -->
+  <canvas id="bgCanvas"></canvas>
+
+  <!-- 20 Second Splash Screen -->
+  <div class="splash-screen" id="splashScreen">
+    <div class="splash-content">
+      <div class="rocket-container">
+        <div class="rocket">
+          <i data-lucide="rocket"></i>
+        </div>
+        <div class="ring ring-1"></div>
+        <div class="ring ring-2"></div>
+        <div class="ring ring-3"></div>
+      </div>
+      <h1>BlastBet</h1>
+      <p>Loading Predictor...</p>
+      <div class="loading-bar"><div class="loading-fill"></div></div>
+    </div>
+  </div>
+
+  <!-- Welcome Panel (After Splash) -->
+  <div class="welcome-panel hidden" id="welcomePanel">
+    <div class="panel-card">
+      <div class="panel-icon"><i data-lucide="eye"></i></div>
+      <h2>Predictor Ready</h2>
+      <p>Tap the button below to enter the live prediction tunnel. You will see the exact crash point before it happens!</p>
+      <button class="btn-primary" id="startPredictingBtn">Start Predicting</button>
+    </div>
+  </div>
+
+  <!-- Main Prediction Screen (Hidden until clicked) -->
+  <div class="prediction-screen hidden" id="predictionScreen">
+    <div class="status-dot" id="statusDot"></div>
+
+    <div class="label" id="phaseLabel">Connecting…</div>
+    <div class="prediction predicting" id="predictionValue">--.--x</div>
+    <div class="sub" id="subLabel">Syncing live round…</div>
+    <div class="bar-track"><div class="bar-fill" id="barFill"></div></div>
+  </div>
+
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script src="predictor.js"></script>
+</body>
+</html>

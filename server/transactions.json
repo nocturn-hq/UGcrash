@@ -1,0 +1,48 @@
+[
+  {
+    "reference": "BLASTBET_1788640876682_y8xf8l",
+    "userId": "0f47bfc0-4ab1-4edc-9ace-04a5aadc603c",
+    "amount": 40,
+    "type": "deposit",
+    "status": "success"
+  },
+  {
+    "reference": "BLASTBET_1788640950761_nf1ge1",
+    "userId": "0f47bfc0-4ab1-4edc-9ace-04a5aadc603c",
+    "amount": 500,
+    "type": "deposit",
+    "status": "success"
+  },
+  {
+    "reference": "bet_40a90aba-6814-4193-8dfc-974b06fa6136_1788671786687",
+    "userId": "40a90aba-6814-4193-8dfc-974b06fa6136",
+    "amount": 100,
+    "type": "bet",
+    "status": "success",
+    "date": "2026-09-06T05:16:26.687Z"
+  },
+  {
+    "reference": "win_40a90aba-6814-4193-8dfc-974b06fa6136_1788671794503",
+    "userId": "40a90aba-6814-4193-8dfc-974b06fa6136",
+    "amount": 112,
+    "type": "win",
+    "status": "success",
+    "date": "2026-09-06T05:16:34.503Z"
+  },
+  {
+    "reference": "bet_40a90aba-6814-4193-8dfc-974b06fa6136_1788679763609",
+    "userId": "40a90aba-6814-4193-8dfc-974b06fa6136",
+    "amount": 10,
+    "type": "bet",
+    "status": "success",
+    "date": "2026-09-06T07:29:23.609Z"
+  },
+  {
+    "reference": "win_40a90aba-6814-4193-8dfc-974b06fa6136_1788679770619",
+    "userId": "40a90aba-6814-4193-8dfc-974b06fa6136",
+    "amount": 20,
+    "type": "win",
+    "status": "success",
+    "date": "2026-09-06T07:29:30.619Z"
+  }
+]

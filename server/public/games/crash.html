@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Crash — BlastBet</title>
+  <link rel="stylesheet" href="../assets/css/theme.css" />
+  <link rel="stylesheet" href="../assets/css/blastbet.css" />
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+  <div class="connect-overlay" id="connectOverlay">
+    <div class="intro-stars" id="introStars"></div>
+
+    <div class="intro-stage">
+      <div class="intro-ping"></div>
+      <div class="intro-ping intro-ping-delay"></div>
+      <div class="intro-rocket-ring">
+        <i data-lucide="rocket" class="intro-rocket" style="width:46px;height:46px;"></i>
+      </div>
+      <div class="intro-check">
+        <i data-lucide="check" style="width:28px;height:28px;"></i>
+      </div>
+    </div>
+
+    <div class="intro-text">
+      <div class="intro-status" id="introStatus">Connecting to the table…</div>
+      <div class="intro-sub" id="introSub">Syncing the live round…</div>
+    </div>
+
+    <div class="intro-dots">
+      <span></span><span></span><span></span>
+    </div>
+  </div>
+
+  <div class="container crash-page">
+    <div class="crash-header">
+      <div class="title-group">
+        <!-- GO BACK BUTTON -->
+        <a href="../index.html" class="icon-btn" aria-label="Go Back" style="display: flex; align-items: center; justify-content: center; text-decoration: none; color: inherit; margin-right: 4px;">
+          <i data-lucide="arrow-left" style="width:18px;height:18px;"></i>
+        </a>
+        <i data-lucide="rocket" style="width:20px;height:20px;color:var(--amber);"></i>
+        <span>Crash</span>
+      </div>
+      <div class="right-group">
+        <button id="muteBtn" class="icon-btn" aria-label="Mute">
+          <i data-lucide="volume-2" style="width:16px;height:16px;"></i>
+        </button>
+        <div class="wallet-chip">
+          <i data-lucide="wallet" style="width:15px;height:15px;color:var(--text-muted);"></i>
+          <span id="walletBalanceCrash" class="mono">KES 10,000</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel history-bar" id="historyBar"></div>
+
+    <div class="panel flight-stage">
+      <canvas id="flightCanvas"></canvas>
+
+      <div class="stage-overlay">
+        <div class="multiplier-display mono" id="multiplierDisplay">1.00x</div>
+        <div class="crashed-label" id="crashedLabel">Flew away!</div>
+        <div class="waiting-block" id="waitingBlock">
+          <i data-lucide="timer" style="width:22px;height:22px;color:var(--text-muted);"></i>
+          <!-- UPDATED TEXT HERE -->
+          <div class="status-label" id="statusLabel">Next round in 10.0s</div>
+          <div class="progress-track">
+            <div class="progress-fill" id="progressFill"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="panels-row">
+      <div class="bet-panels" id="betPanels"></div>
+
+      <div class="panel side-panel" id="sidePanel">
+        <div class="side-tabs">
+          <button class="side-tab active" data-tab="all">
+            <i data-lucide="trending-up" style="width:14px;height:14px;"></i>
+            All bets
+          </button>
+          <button class="side-tab" data-tab="mine">
+            <i data-lucide="wallet" style="width:14px;height:14px;"></i>
+            My bets
+          </button>
+          <button class="side-tab" data-tab="top">
+            <i data-lucide="trophy" style="width:14px;height:14px;"></i>
+            Leaderboard
+          </button>
+        </div>
+        <div class="side-list" id="sideRows"></div>
+      </div>
+    </div>
+
+    <div class="footer-note">
+      <i data-lucide="settings-2" style="width:13px;height:13px;"></i>
+      play responsibly gaming only allowed for 18+
+    </div>
+  </div>
+
+  <script src="../assets/js/games/crash.js"></script>
+</body>
+</html>

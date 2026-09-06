@@ -1,0 +1,255 @@
+/* ============================================================
+   theme.css — shared design tokens, used by every page.
+   Keep colors/spacing here so all pages stay visually consistent.
+
+   This file merges two sources:
+   1) the original BlastBet palette/classes (canonical — index.html,
+      crash.html, crash.js and homepage.js already depend on these
+      exact names and values, so they're left unchanged below).
+   2) a second theme.css supplied for a new game (peg/ball/risk-tabs/
+      multiplier-log point to a Plinko-style page), which used a
+      different naming convention for the same set of colors.
+
+   Rather than run two slightly different palettes side by side
+   (e.g. --blue: #4d9fff next to --accent-blue: #4d9fff, or
+   --red: #ff4d4d next to --accent-red: #ff4d5e), the second file's
+   variable names are kept — new code can still read --bg-primary,
+   --accent-blue, etc. via getComputedStyle exactly as its comment
+   requires — but they're defined as aliases of the canonical
+   tokens, so every page always renders the same palette. Genuinely
+   new tokens with no existing equivalent (--peg-color, --ball-color,
+   --radius-md) are kept as their own real values.
+   ============================================================ */
+
+:root {
+  /* black / white / yellow / green palette. Variable NAMES are kept
+     stable (other code reads them by name via getComputedStyle) —
+     only the values changed. --blue and --purple no longer have their
+     own hue; they alias to yellow/green so anything still referencing
+     them stays on-palette. --red is kept, but demoted from "brand
+     primary" to a purely functional danger/error color (a lost bet,
+     a form error) — it's the one deliberate exception to the
+     black/white/yellow/green rule, since a UI with no way to signal
+     "you lost" differently from "you won" is a usability problem.
+     Say the word if you'd rather it go too. */
+  --bg: #000000;
+  --panel: #0d0d0d;
+  --panel-2: #161616;
+  --border: #2b2b2b;
+  --border-light: #444444;
+  --text: #ffffff;
+  --text-muted: #9a9a9a;
+  --green: #22c55e;
+  --red: #ef4444;
+  --amber: #ffd60a;
+  --blue: var(--amber);
+  --purple: var(--green);
+  --radius: 12px;
+  --radius-sm: 8px;
+  --radius-pill: 999px;
+
+  /* aliases for the second theme.css's naming convention — same
+     colors as above, so new components stay visually consistent
+     with the rest of the site instead of introducing a near-duplicate
+     palette (e.g. its --accent-red was #ff4d5e vs canonical #ff4d4d) */
+  --bg-primary: var(--bg);
+  --bg-panel: var(--panel);
+  --bg-panel-alt: var(--panel-2);
+  --border-color: var(--border);
+  --text-primary: var(--text);
+  --accent-blue: var(--blue);
+  --accent-green: var(--green);
+  --accent-red: var(--red);
+  --accent-yellow: var(--amber);
+  --accent-purple: var(--purple);
+
+  /* genuinely new tokens — no existing equivalent */
+  --peg-color: #4a5068;
+  --ball-color: #ffffff;
+  --radius-md: 10px;
+  --font-main: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-main);
+  line-height: 1.5;
+}
+
+.mono {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+.panel {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+.muted { color: var(--text-muted); }
+
+a { color: inherit; }
+
+input, select {
+  background: var(--panel-2);
+  border: 1px solid var(--border);
+  color: var(--text);
+  border-radius: var(--radius-sm);
+  padding: 11px 12px;
+  font-size: 14px;
+  width: 100%;
+  outline: none;
+  font-family: inherit;
+}
+input:focus, select:focus { border-color: var(--border-light); }
+
+label {
+  display: block;
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-bottom: 6px;
+  font-weight: 500;
+}
+
+.field { margin-bottom: 16px; }
+
+.btn {
+  border: none;
+  border-radius: 10px;
+  padding: 13px 20px;
+  font-weight: 700;
+  font-size: 14px;
+  cursor: pointer;
+  font-family: inherit;
+}
+.btn-primary { background: var(--amber); color: #000; }
+.btn-secondary { background: transparent; border: 1px solid var(--border); color: var(--text); }
+.btn-block { width: 100%; }
+
+/* new modifiers from the second theme.css, added using the
+   canonical --green/--red tokens (no equivalents existed before) */
+.btn-danger { background: var(--red); color: #200404; }
+.btn-success { background: var(--green); color: #052013; }
+
+/* generic disabled fallback for any .btn variant that doesn't
+   define its own (placed before .btn-primary:disabled so the
+   more specific override below still wins for primary buttons) */
+.btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.btn-primary:disabled { background: var(--panel-2); color: var(--text-muted); cursor: not-allowed; opacity: 1; }
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 3px 9px;
+  border-radius: var(--radius-pill);
+}
+.badge-green { background: rgba(0,226,138,0.14); color: var(--green); }
+.badge-red { background: rgba(255,77,77,0.14); color: var(--red); }
+.badge-amber { background: rgba(255,176,32,0.14); color: var(--amber); }
+
+.error-text {
+  color: var(--red);
+  font-size: 12px;
+  margin-top: 6px;
+  display: none;
+}
+.error-text.visible { display: block; }
+
+.container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+/* ============================================================
+   Game-page scaffolding (from the second theme.css) — generic
+   layout for any two-column game page (controls + canvas), not
+   tied to a specific game. Crash's own layout in blastbet.css is
+   unaffected since it uses its own class names throughout.
+   ============================================================ */
+
+.game-shell {
+  display: flex;
+  gap: 16px;
+  padding: 20px;
+  max-width: 1100px;
+  margin: 0 auto;
+  flex-wrap: wrap;
+}
+
+.game-panel {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 16px;
+}
+
+.controls-panel {
+  flex: 0 0 280px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.canvas-panel {
+  flex: 1 1 560px;
+  min-width: 320px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+canvas {
+  width: 100%;
+  max-width: 640px;
+  background: var(--panel-2);
+  border-radius: var(--radius-md);
+  display: block;
+}
+
+.balance-display {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--green);
+}
+
+.risk-tabs, .bet-tabs {
+  display: flex;
+  gap: 6px;
+}
+.risk-tabs button, .bet-tabs button {
+  flex: 1;
+  padding: 6px 8px;
+  background: var(--panel-2);
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  font-family: inherit;
+}
+.risk-tabs button.active, .bet-tabs button.active {
+  border-color: var(--blue);
+  color: var(--blue);
+}
+
+.multiplier-log {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  max-height: 120px;
+  overflow-y: auto;
+}
+.multiplier-log span {
+  padding: 3px 8px;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  background: var(--panel-2);
+}
