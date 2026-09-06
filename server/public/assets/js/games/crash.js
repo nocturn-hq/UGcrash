@@ -7,7 +7,6 @@
 
   const PHASE = { WAITING: "WAITING", RUNNING: "RUNNING", CRASHED: "CRASHED" };
 
-  // UPDATED: Changed from 5 to 10 to match roundEngine.js
   const WAIT_SECONDS = 10;
   const CRASH_DISPLAY_MS = 2000;
   const GROWTH_RATE = 0.1; // matches server's roundEngine.js — real Aviator-paced climb
@@ -30,7 +29,6 @@
     };
   }
 
-  // 🔥 UPDATED: Helper to get the User ID from the new Email/Password system
   function getCurrentUserId() {
     try {
       const user = JSON.parse(localStorage.getItem('blastbet_user'));
@@ -40,7 +38,6 @@
     }
   }
 
-  // 🔥 UPDATED: Fixed, synced "Fake Odds" for everyone
   const FAKE_NAMES = ["Kai_88", "Nia_bet", "Theo_x", "Zara_99", "Milo_go", "Ana_vip", "Ravi_pro", "Luca_win", "Ines_fx", "Omar_23"];
   const FAKE_MULTIPLIERS = [2.14, 5.32, 1.87, 12.45, 3.20, 8.91, 4.55, 6.12, 7.22, 9.99];
   const FAKE_AMOUNTS = [1500, 3500, 500, 12000, 2200, 8000, 4500, 3000, 6200, 15000];
@@ -64,8 +61,16 @@
     return { amount: 10, placed: false, pending: false, cashedOut: null, autoCashout: false, autoTarget: 2.0, autoCashoutSent: false };
   }
 
+  /* ------------------------------------------------------------------
+     SOUND — replaced entirely. Instead of per-event stingers (launch
+     whoosh, crash bang, cashout chime), this is one gentle, continuous
+     ambient loop: a soft pad chord plus a slow, quiet pulse — like a
+     calm background beat, not a reactive sound effect. It starts on
+     the first user interaction (browsers block audio before that) and
+     just keeps looping regardless of round phase.
+     ------------------------------------------------------------------ */
   const sound = (function () {
-    const s = { ctx: null, osc: null, gain: null, muted: false };
+    const s = { ctx: null, muted: false, playing: false, padNodes: [], pulseTimer: null };
 
     function ensureCtx() {
       if (!s.ctx) {
@@ -77,99 +82,97 @@
       return s.ctx;
     }
 
-    function startLaunch() {
-      if (s.muted) return;
-      const ctx = ensureCtx();
-      if (!ctx) return;
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
-      osc.type = "sawtooth";
-      osc.frequency.value = 85;
-      gain.gain.value = 0;
-      osc.connect(gain).connect(ctx.destination);
-      gain.gain.linearRampToValueAtTime(0.05, ctx.currentTime + 0.2);
-      osc.start();
-      s.osc = osc;
-      s.gain = gain;
+    // A soft, slowly-shifting pad — two detuned sine tones a fifth
+    // apart, very quiet, with a slow filter sweep so it breathes
+    // instead of droning flatly.
+    function startPad() {
+      const ctx = s.ctx;
+      const filter = ctx.createBiquadFilter();
+      filter.type = "lowpass";
+      filter.frequency.value = 900;
+      filter.connect(ctx.destination);
+
+      const freqs = [110, 164.81]; // A2 and E3 — a calm, open fifth
+      freqs.forEach((f, i) => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = "sine";
+        osc.frequency.value = f;
+        gain.gain.value = 0;
+        osc.connect(gain).connect(filter);
+        osc.start();
+        gain.gain.linearRampToValueAtTime(0.035, ctx.currentTime + 2);
+        s.padNodes.push({ osc, gain });
+      });
+
+      // slow, gentle filter sweep so the pad feels alive, not static
+      const lfo = ctx.createOscillator();
+      const lfoGain = ctx.createGain();
+      lfo.frequency.value = 0.05;
+      lfoGain.gain.value = 250;
+      lfo.connect(lfoGain).connect(filter.frequency);
+      lfo.start();
+      s.padNodes.push({ osc: lfo, gain: lfoGain });
+      s.padFilter = filter;
     }
 
-    function updatePitch(multiplier) {
-      if (!s.osc || !s.ctx) return;
-      const freq = 85 + Math.min(520, Math.log(multiplier + 1) * 230);
-      s.osc.frequency.setTargetAtTime(freq, s.ctx.currentTime, 0.08);
-    }
-
-    function stopLaunch() {
-      if (!s.osc || !s.ctx) return;
-      const now = s.ctx.currentTime;
-      s.gain.gain.cancelScheduledValues(now);
-      s.gain.gain.setValueAtTime(s.gain.gain.value, now);
-      s.gain.gain.linearRampToValueAtTime(0, now + 0.06);
-      s.osc.stop(now + 0.08);
-      s.osc = null;
-      s.gain = null;
-    }
-
-    function playCrash() {
-      if (s.muted) return;
-      const ctx = ensureCtx();
-      if (!ctx) return;
-      const now = ctx.currentTime;
-
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
-      osc.type = "square";
-      osc.frequency.setValueAtTime(220, now);
-      osc.frequency.exponentialRampToValueAtTime(35, now + 0.35);
-      gain.gain.setValueAtTime(0.22, now);
-      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.4);
-      osc.connect(gain).connect(ctx.destination);
-      osc.start(now);
-      osc.stop(now + 0.42);
-
-      const bufferSize = Math.floor(ctx.sampleRate * 0.3);
-      const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
-      const data = buffer.getChannelData(0);
-      for (let i = 0; i < bufferSize; i++) data[i] = (Math.random() * 2 - 1) * (1 - i / bufferSize);
-      const noise = ctx.createBufferSource();
-      noise.buffer = buffer;
-      const noiseGain = ctx.createGain();
-      noiseGain.gain.setValueAtTime(0.16, now);
-      noiseGain.gain.exponentialRampToValueAtTime(0.001, now + 0.3);
-      noise.connect(noiseGain).connect(ctx.destination);
-      noise.start(now);
-    }
-
-    function playCashout() {
-      if (s.muted) return;
-      const ctx = ensureCtx();
-      if (!ctx) return;
-      const now = ctx.currentTime;
+    // A very soft, slow pulse underneath the pad — like a gentle
+    // heartbeat, not a percussive beat. Schedules itself repeatedly.
+    function schedulePulse() {
+      if (!s.playing || s.muted) return;
+      const ctx = s.ctx;
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
       osc.type = "sine";
-      osc.frequency.setValueAtTime(520, now);
-      osc.frequency.exponentialRampToValueAtTime(1040, now + 0.18);
-      gain.gain.setValueAtTime(0.001, now);
-      gain.gain.linearRampToValueAtTime(0.12, now + 0.02);
-      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.22);
+      osc.frequency.value = 110;
+      gain.gain.value = 0;
       osc.connect(gain).connect(ctx.destination);
+      const now = ctx.currentTime;
+      gain.gain.linearRampToValueAtTime(0.05, now + 0.05);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.5);
       osc.start(now);
-      osc.stop(now + 0.24);
+      osc.stop(now + 0.55);
+
+      s.pulseTimer = setTimeout(schedulePulse, 1400);
+    }
+
+    function startMusic() {
+      if (s.playing || s.muted) return;
+      const ctx = ensureCtx();
+      if (!ctx) return;
+      s.playing = true;
+      startPad();
+      schedulePulse();
+    }
+
+    function stopMusic() {
+      s.playing = false;
+      clearTimeout(s.pulseTimer);
+      if (s.ctx) {
+        const now = s.ctx.currentTime;
+        s.padNodes.forEach(({ osc, gain }) => {
+          try {
+            gain.gain.linearRampToValueAtTime(0, now + 0.4);
+            osc.stop(now + 0.5);
+          } catch (e) {}
+        });
+      }
+      s.padNodes = [];
     }
 
     function setMuted(m) {
       s.muted = m;
-      if (m) stopLaunch();
+      if (m) stopMusic();
+      else startMusic();
     }
 
-    return { ensureCtx, startLaunch, updatePitch, stopLaunch, playCrash, playCashout, setMuted };
+    return { ensureCtx, startMusic, stopMusic, setMuted };
   })();
 
   const flightCanvas = (function () {
     let canvas, ctx;
     let dpr = 1;
-    let lastTip = [0, 0];
+    let lastAnchor = [0, 0];
     let lastAngle = -Math.PI / 2;
 
     function drawRocket(x, y, angle, opts) {
@@ -313,25 +316,73 @@
 
       const padX = Math.max(24, w * 0.04);
       const padY = Math.max(24, h * 0.08);
-      const rocketScale = Math.max(1.0, Math.min(2.2, h / 190));
-      const topRocketMargin = 20 * rocketScale;
-      const usableW = w - padX * 2;
-      const usableH = h - padY - Math.max(padY, topRocketMargin);
-      const norm = Math.min(1, Math.log(Math.max(1, multiplierNow)) / Math.log(30));
-
-      const points = [];
-      const steps = 60;
-      for (let i = 0; i <= steps; i++) {
-        const t = (i / steps) * norm;
-        const x = padX + t * usableW;
-        const curveY = Math.pow(t, 1.6);
-        const y = h - padY - curveY * usableH;
-        points.push([x, y]);
-      }
+      // Smaller reference height specifically shrinks the rocket on
+      // compact/mobile stages (h <= 260) without touching the desktop
+      // scale at all (that branch is unchanged from before).
+      const rocketScale = h <= 260
+        ? Math.max(0.6, h / 320)
+        : Math.max(1.0, Math.min(2.2, h / 190));
 
       const isCrashed = phaseNow === PHASE.CRASHED;
-      const crashElapsed = isCrashed && game.crashedAt ? (Date.now() - game.crashedAt) / 1000 : 0;
-      const flashPhase = isCrashed && crashElapsed < 0.18;
+
+      // ------------------------------------------------------------------
+      // The rocket now holds a FIXED screen position (roughly center)
+      // while RUNNING, with a gentle float/bob — it no longer travels
+      // toward an edge as the multiplier grows. Only at the moment of
+      // CRASHED does it actually depart, launching from this same
+      // comfortable center point instead of wherever a far-traveled
+      // position used to be — which is also what was causing it to
+      // visually "get stuck" in a corner on big multipliers before.
+      // ------------------------------------------------------------------
+      // ------------------------------------------------------------------
+      // TWO-PHASE MOTION:
+      // Phase 1 (launch, ~1.4s of real elapsed time): the rocket actually
+      // travels from the bottom-left up to the center anchor point, at a
+      // visible, eased "medium speed" pace — not an instant jump.
+      // Phase 2 (float): once it arrives, it holds at the anchor with a
+      // gentle bob for the rest of the flight, however high the
+      // multiplier climbs, so it never travels toward an edge.
+      // ------------------------------------------------------------------
+      const LAUNCH_DURATION_SEC = 1.4;
+      // Recovers real elapsed seconds from the multiplier formula itself
+      // (multiplier = e^(rate*t)) — no extra state needs to be tracked.
+      const elapsedSec = Math.log(Math.max(1, multiplierNow)) / GROWTH_RATE;
+      const launchProgress = Math.min(1, elapsedSec / LAUNCH_DURATION_SEC);
+      // Ease-out cubic: quick at first, smoothly decelerating into place —
+      // this is the "medium speed, then settles" feel.
+      const eased = 1 - Math.pow(1 - launchProgress, 3);
+
+      const anchorX = w * 0.46;
+      const anchorY = h * 0.5;
+      const bobAmount = 5 * (rocketScale / 1.6);
+      // Bob fades in as it arrives, rather than bobbing while still
+      // traveling toward the anchor.
+      const bob = isCrashed ? 0 : Math.sin(Date.now() / 480) * bobAmount * eased;
+
+      const launchStartX = padX;
+      const launchStartY = h - padY; // bottom-left of the usable stage
+
+      const rocketX = isCrashed ? lastAnchor[0] : launchStartX + (anchorX - launchStartX) * eased;
+      const rocketY = isCrashed ? lastAnchor[1] : launchStartY + (anchorY + bob - launchStartY) * eased;
+
+      // The line's endpoint is now ALSO fixed at the rocket's anchor —
+      // only its curvature (how sharply it bends) grows with the
+      // multiplier, giving the impression of climbing without the
+      // endpoint ever moving toward an edge.
+      const bendAmount = Math.min(1, Math.log(Math.max(1, multiplierNow)) / Math.log(30));
+      const startX = padX;
+      const startY = h - padY;
+      const cpX = startX + (rocketX - startX) * 0.5;
+      const cpY = startY - bendAmount * (startY - rocketY) * 1.25;
+
+      const points = [];
+      const steps = 40;
+      for (let i = 0; i <= steps; i++) {
+        const t = i / steps;
+        const x = (1 - t) * (1 - t) * startX + 2 * (1 - t) * t * cpX + t * t * rocketX;
+        const y = (1 - t) * (1 - t) * startY + 2 * (1 - t) * t * cpY + t * t * rocketY;
+        points.push([x, y]);
+      }
 
       const lineColor = isCrashed ? "#5a5f6b" : THEME.amber;
       const fillTop = isCrashed ? "rgba(122,127,140,0.14)" : "rgba(255,214,10,0.28)";
@@ -362,12 +413,13 @@
       const travelAngle = Math.atan2(tipY - prevY, tipX - prevX);
 
       if (!isCrashed) {
-        lastTip = [tipX, tipY];
+        lastAnchor = [rocketX, rocketY];
         lastAngle = travelAngle;
-        drawRocket(tipX, tipY, travelAngle, { flame: true, dim: false, scale: rocketScale });
+        drawRocket(rocketX, rocketY, travelAngle, { flame: true, dim: false, scale: rocketScale });
       } else {
-        const [lx, ly] = lastTip;
+        const [lx, ly] = lastAnchor;
         const angle = lastAngle;
+        const crashElapsed = game.crashedAt ? (Date.now() - game.crashedAt) / 1000 : 0;
         const dist = 220 * crashElapsed + 260 * crashElapsed * crashElapsed;
         const ex = lx + Math.cos(angle) * dist;
         const ey = ly + Math.sin(angle) * dist;
@@ -389,8 +441,12 @@
         }
       }
 
+      // Red crash flash — kept on desktop for impact, removed on mobile
+      // per request (w matches the CSS's own 480px mobile breakpoint).
+      const crashElapsedForFlash = isCrashed && game.crashedAt ? (Date.now() - game.crashedAt) / 1000 : 0;
+      const flashPhase = isCrashed && crashElapsedForFlash < 0.18 && w > 480;
       if (flashPhase) {
-        const flashAlpha = (1 - crashElapsed / 0.18) * 0.35;
+        const flashAlpha = (1 - crashElapsedForFlash / 0.18) * 0.35;
         ctx.fillStyle = `rgba(255,77,77,${flashAlpha})`;
         ctx.fillRect(0, 0, w, h);
       }
@@ -431,7 +487,6 @@
     myBetsLog: [],
     muted: false,
     sideTab: "all",
-    // 🔥 UPDATED: Static leaderboard for everyone
     leaderboard: Array.from({ length: 8 }, (_, i) => ({
       name: FAKE_NAMES[i],
       amount: FAKE_AMOUNTS[i],
@@ -630,6 +685,7 @@
 
   function placeBet(index) {
     sound.ensureCtx();
+    sound.startMusic();
     const bet = game.bets[index];
     if (game.phase !== PHASE.WAITING || bet.placed || bet.pending || bet.amount > game.balance || bet.amount < MIN_STAKE) return;
     bet.pending = true;
@@ -707,12 +763,8 @@
     renderSideList();
   }
 
-  // ✅ FIX APPLIED HERE: Force a UI refresh when bets reset to unlock buttons
   function resetForNextRound() {
     game.bets = game.bets.map((b) => ({ ...makeInitialBet(), amount: b.amount }));
-    
-    // FIX: The phase doesn't change (WAITING to WAITING), so tick() won't trigger fullRender().
-    // We must explicitly call it to refresh the buttons immediately.
     fullRender();
   }
 
@@ -754,10 +806,8 @@
 
     if (game.phase !== lastPhase) {
       if (game.phase === PHASE.RUNNING) {
-        sound.startLaunch();
         const botCount = 4 + Math.floor(Math.random() * 6);
         for (let i = 0; i < botCount; i++) {
-          // 🔥 UPDATED: Uses the fixed array so everyone sees the same odds
           const currentIndex = (fakeIndex + i) % FAKE_NAMES.length;
           pushFeedEntry({
             name: FAKE_NAMES[currentIndex],
@@ -766,10 +816,7 @@
             result: "pending",
           });
         }
-        fakeIndex += botCount; // Moves to the next set of names
-      } else if (game.phase === PHASE.CRASHED) {
-        sound.stopLaunch();
-        if (lastPhase === PHASE.RUNNING) sound.playCrash();
+        fakeIndex += botCount;
       }
       lastPhase = game.phase;
       fullRender();
@@ -784,7 +831,6 @@
           cashOutBet(i);
         }
       });
-      sound.updatePitch(game.multiplier);
       el.multiplierDisplay.textContent = `${fmt(game.multiplier)}x`;
       updateLiveCashoutAmounts();
     }
@@ -822,6 +868,11 @@
     game.currentRound.crashPoint = crashPoint;
     game.currentRound.crashAt = crashAt;
 
+    // Local fallback so history still shows something today. Once
+    // server.js sends a HISTORY_UPDATE message (next file to update),
+    // handleHistoryUpdate below will overwrite this with the real,
+    // synced-across-devices list — this local push just covers the
+    // gap until that server change is deployed.
     game.history = [crashPoint, ...game.history].slice(0, 40);
 
     game.bets.forEach((b) => {
@@ -829,6 +880,16 @@
         game.myBetsLog = [{ name: "You", amount: b.amount, multiplier: crashPoint, result: "loss" }, ...game.myBetsLog].slice(0, 30);
       }
     });
+  }
+
+  // NEW: handles the synced history list once server.js is updated to
+  // send it. Overwrites the local-fallback list above with the real,
+  // server-authoritative one so every device shows the same history,
+  // persisted across reconnects instead of resetting per-tab.
+  function handleHistoryUpdate(data) {
+    if (!Array.isArray(data.history)) return;
+    game.history = data.history;
+    renderHistory();
   }
 
   function handleWalletUpdate(data) {
@@ -852,7 +913,6 @@
         localBet.cashedOut = serverBet.cashedOut ? serverBet.cashoutMultiplier : null;
 
         if (justCashedOut) {
-          sound.playCashout();
           game.myBetsLog = [
             { name: "You", amount: serverBet.amount, multiplier: serverBet.cashoutMultiplier, result: "win" },
             ...game.myBetsLog,
@@ -878,11 +938,11 @@
     else if (data.type === "WALLET_UPDATE") handleWalletUpdate(data);
     else if (data.type === "BET_UPDATE") handleBetUpdate(data);
     else if (data.type === "BET_REJECTED") handleBetRejected(data);
+    else if (data.type === "HISTORY_UPDATE") handleHistoryUpdate(data);
   }
 
-  // 🔥 UPDATED: Now reads userId from the new blastbet_user object
   function initGameServer() {
-    const userId = getCurrentUserId(); 
+    const userId = getCurrentUserId();
     const wsUrl = userId ? `${WS_URL}?userId=${encodeURIComponent(userId)}` : WS_URL;
 
     const ws = new WebSocket(wsUrl);
@@ -905,8 +965,7 @@
     ws.onclose = () => {
       liveSocket = null;
       if (el.connectOverlay) el.connectOverlay.style.display = "flex";
-      // 🔥 UPDATED: Increased to 10 seconds to prevent browser inspector freezing
-      setTimeout(initGameServer, 10000);
+      setTimeout(initGameServer, 1500);
     };
 
     ws.onerror = () => {};
@@ -915,7 +974,6 @@
   }
 
   function init() {
-    // 🔥 UPDATED: Checks the new object and redirects to open the Register modal
     if (!getCurrentUserId()) {
         window.location.href = "/index.html?openAuth=register";
         return;
