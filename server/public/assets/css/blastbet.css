@@ -1142,12 +1142,13 @@ svg.lucide {
     font-size: 11px;
   }
 
+  /* FIX 1: Make the canvas compact and sized for mobile */
   .flight-stage {
-    height: 190px;
+    height: 200px;
   }
 
   .multiplier-display {
-    font-size: 34px;
+    font-size: 32px;
   }
 
   .waiting-block .status-label {
@@ -1158,9 +1159,7 @@ svg.lucide {
     height: 4px;
   }
 
-  /* Bet 1 / Bet 2 side by side instead of stacked full-width — this is
-     the single biggest space saver, since two stacked panels alone
-     were taller than the whole viewport. */
+  /* FIX 2: Make Bet 1 & Bet 2 side by side */
   .bet-panels {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -1192,24 +1191,33 @@ svg.lucide {
   }
 
   .quick-btn {
-    padding: 5px 2px;
+    padding: 6px 2px;
     font-size: 10px;
   }
 
-  .quick-btn.block {
-    display: none;
+  /* FIX 3: Keep the "All Bets" panel VISIBLE! (Change from display:none to flex) */
+  .side-panel {
+    display: flex; 
+    flex: 1 1 auto;
+    max-height: 160px; /* Make it short and usable */
+    min-width: 0;
   }
 
+  .side-tabs button {
+    font-size: 11px;
+  }
+
+  .side-row {
+    padding: 6px 4px;
+    font-size: 12px;
+  }
+
+  /* Hide the extra stuff to save space */
   .auto-cashout-row {
     display: none;
   }
 
-  .bet-panel .btn {
-    padding: 9px 10px;
-    font-size: 12px;
-  }
-
-  .side-panel {
+  .quick-btn.block {
     display: none;
   }
 
