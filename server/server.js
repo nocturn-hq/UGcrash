@@ -81,6 +81,21 @@ app.use(helmet({ contentSecurityPolicy: false }));
 app.use(express.json());
 app.use(express.static(path.join(__dirname, "public")));
 
+// Protect the Admin Page
+app.get("/admin", (req, res) => {
+    const password = req.query.password;
+    if (password === process.env.ADMIN_PASSWORD) {
+        res.sendFile(path.join(__dirname, "public", "admin.html"));
+    } else {
+        res.status(401).send("Unauthorized: Access Denied");
+    }
+});
+
+// Prevent public access to /admin.html directly
+app.get("/admin.html", (req, res) => {
+    res.redirect("/admin");
+});
+
 /* =========================================================
    AUTHENTICATION ROUTES
    ========================================================= */
