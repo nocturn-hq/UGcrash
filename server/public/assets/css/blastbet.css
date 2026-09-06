@@ -4,30 +4,13 @@
    and classes: --bg/--panel/--panel-2/--border/--text/etc.,
    .btn, .btn-primary, .btn-secondary, .btn-block, .badge,
    .panel, .container, .mono, .muted, and the default input style).
-
-   Rule for this file: never redeclare a theme.css variable, and
-   never hardcode a color that theme.css already exposes as a
-   variable. The only new modifier classes added below (.badge-neutral,
-   .btn-cashout) extend theme's existing .badge/.btn patterns — they
-   don't introduce new colors outside the black/white/yellow/green
-   palette.
-
-   Per-game accent colors (each game card's icon/hover-border/play
-   button color) are inherently data-driven, one per game — those
-   are set as a local `--accent` custom property on the individual
-   card element, and every rule below reads from that local property
-   rather than a hardcoded value. Cards have no background gradient —
-   they're flat var(--panel).
    ============================================================ */
 
 svg.lucide {
   display: block;
 }
 
-/* ---------------------------------------------------------------------- */
-/* Navbar (shared)                                                        */
-/* ---------------------------------------------------------------------- */
-
+/* Navbar (shared) */
 .navbar {
   display: flex;
   align-items: center;
@@ -118,10 +101,7 @@ svg.lucide {
   gap: 8px;
 }
 
-/* ---------------------------------------------------------------------- */
-/* Homepage — hero                                                        */
-/* ---------------------------------------------------------------------- */
-
+/* Homepage — hero */
 .hero {
   position: relative;
   border-radius: var(--radius);
@@ -168,10 +148,7 @@ svg.lucide {
   padding-bottom: 20px;
 }
 
-/* ---------------------------------------------------------------------- */
-/* Category tabs                                                          */
-/* ---------------------------------------------------------------------- */
-
+/* Category tabs */
 .category-tabs {
   display: flex;
   gap: 8px;
@@ -199,10 +176,7 @@ svg.lucide {
   color: var(--amber);
 }
 
-/* ---------------------------------------------------------------------- */
-/* Games grid                                                             */
-/* ---------------------------------------------------------------------- */
-
+/* Games grid */
 .games-section-header {
   display: flex;
   align-items: center;
@@ -356,10 +330,7 @@ svg.lucide {
   cursor: not-allowed;
 }
 
-/* ---------------------------------------------------------------------- */
-/* Responsible-play strip + footer                                        */
-/* ---------------------------------------------------------------------- */
-
+/* Responsible-play strip + footer */
 .responsible-strip {
   display: flex;
   align-items: center;
@@ -389,10 +360,7 @@ svg.lucide {
   font-weight: 700;
 }
 
-/* ==========================================================================
-   Crash game page
-   ========================================================================== */
-
+/* Crash game page */
 .crash-page {
   display: flex;
   flex-direction: column;
@@ -747,14 +715,7 @@ svg.lucide {
   font-size: 12px;
 }
 
-/* ==========================================================================
-   Crash — connection intro
-   Full-screen overlay shown on load and any time the network drops.
-   Deliberately built without gradients (box-shadow blur + keyframes
-   only) to stay consistent with the flat black/white/yellow/green
-   palette — the "glow" effects below are soft shadows, not gradients.
-   ========================================================================== */
-
+/* Connection intro (kept as is) */
 .connect-overlay {
   position: fixed;
   inset: 0;
@@ -939,10 +900,7 @@ svg.lucide {
 }
 
 /* ==========================================================================
-   Responsive
-   Two breakpoints: 900px (tablet — start stacking multi-column layouts)
-   and 640px (phone — full mobile pass: smaller type, single-column
-   everything, tighter spacing). Desktop above 900px is unchanged.
+   Responsive (900px, 640px, 480px)
    ========================================================================== */
 
 @media (max-width: 900px) {
@@ -1039,12 +997,14 @@ svg.lucide {
     padding: 8px;
   }
 
+  /* 🌟 INCREASED SIZE: 300px (Was 220px) */
   .flight-stage {
-    height: 220px;
+    height: 300px;
   }
 
+  /* 🌟 INCREASED SIZE: 56px (Was 40px) */
   .multiplier-display {
-    font-size: 40px;
+    font-size: 56px;
   }
 
   .waiting-block {
@@ -1089,17 +1049,7 @@ svg.lucide {
     padding: 0 24px;
   }
 }
-/* ============================================================
-   ADDITIONS to blastbet.css — mobile fit + bigger desktop stage.
-   Append these below the existing @media (max-width: 640px) block.
-   ============================================================ */
 
-/* ---------------------------------------------------------------------- */
-/* Desktop: give the flight stage real room so the rocket isn't          */
-/* dwarfed by empty canvas space. crash.js now sizes the rocket itself   */
-/* relative to this height automatically — bigger stage, bigger rocket,  */
-/* no separate per-breakpoint JS tuning needed.                          */
-/* ---------------------------------------------------------------------- */
 @media (min-width: 901px) {
   .flight-stage {
     height: 420px;
@@ -1110,19 +1060,6 @@ svg.lucide {
   }
 }
 
-/* ---------------------------------------------------------------------- */
-/* Phone: compact everything so the plane AND the primary bet controls   */
-/* fit in one screen with no scrolling. Trade-offs made here, flagged    */
-/* so they're a deliberate choice, not a silent removal:                 */
-/*   - Auto cash-out row is hidden by default (still fully functional    */
-/*     from a device/orientation above this breakpoint).                 */
-/*   - The full-width "Max" quick button is hidden (the 5-button grid    */
-/*     above it still covers +50/+200/+500/2x/Min).                      */
-/*   - The side panel (All bets / My bets / Leaderboard) is hidden here  */
-/*     — it was already the least essential piece for "see the plane     */
-/*     and place a bet," and hiding it (vs. just pushing it below the    */
-/*     fold) keeps the visible screen intentional rather than truncated. */
-/* ---------------------------------------------------------------------- */
 @media (max-width: 480px) {
   .crash-page {
     gap: 6px;
@@ -1142,24 +1079,24 @@ svg.lucide {
     font-size: 11px;
   }
 
-  /* FIX 1: Make the canvas compact and sized for mobile */
+  /* 🌟 INCREASED SIZE: 350px (Was 200px) */
   .flight-stage {
-    height: 200px;
+    height: 350px;
   }
 
+  /* 🌟 INCREASED SIZE: 52px (Was 32px) */
   .multiplier-display {
-    font-size: 32px;
+    font-size: 52px;
   }
 
   .waiting-block .status-label {
-    font-size: 12px;
+    font-size: 14px;
   }
 
   .progress-track {
     height: 4px;
   }
 
-  /* FIX 2: Make Bet 1 & Bet 2 side by side */
   .bet-panels {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -1195,11 +1132,11 @@ svg.lucide {
     font-size: 10px;
   }
 
-  /* FIX 3: Keep the "All Bets" panel VISIBLE! (Change from display:none to flex) */
+  /* All Bets Panel is now VISIBLE! */
   .side-panel {
     display: flex; 
     flex: 1 1 auto;
-    max-height: 160px; /* Make it short and usable */
+    max-height: 160px; 
     min-width: 0;
   }
 
@@ -1212,7 +1149,6 @@ svg.lucide {
     font-size: 12px;
   }
 
-  /* Hide the extra stuff to save space */
   .auto-cashout-row {
     display: none;
   }
